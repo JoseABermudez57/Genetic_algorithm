@@ -1,6 +1,5 @@
 import math
 import random
-
 import pandas as pd
 
 data = {
@@ -11,19 +10,15 @@ data = {
 }
 
 
-def gen_base_values(a, b, bits_length, delta_x_tch):
+def gen_base_values(a, b, delta_x_tch):
     graphic_range = b - a
-
-    delta_x = delta_x_evaluation(graphic_range, bits_length, delta_x_tch)
-
-    jumps = graphic_range / delta_x
+    jumps = graphic_range / delta_x_tch
     points = jumps + 1
     qt_bits = math.ceil(math.log(points, 2))
-    print(delta_x, points, jumps)
-    if 2 ** (qt_bits - 1) < points <= 2 ** qt_bits:
-        print("correcto", qt_bits)
-    else:
-        print("incorrecto", qt_bits)
+
+    delta_x = delta_x_evaluation(graphic_range, qt_bits, delta_x_tch)
+
+    return qt_bits, delta_x
 
 
 def delta_x_evaluation(graphic_range, qt_bits, delta_x_tch):
@@ -34,23 +29,17 @@ def delta_x_evaluation(graphic_range, qt_bits, delta_x_tch):
         return delta_x_tch
 
 
-def gen_individuals(min_population, jumps, qt_bits, a, delta_x):
-    random_nums = [random.randint(0, jumps) for _ in range(min_population)]
+def gen_individuals(min_population, qt_bits, a, delta_x):
+
+    random_nums = random.sample(range((pow(2, qt_bits))), min_population)
     binary_nums = [format(int(num), f'0{qt_bits}b') for num in random_nums]
     x_values = [round(a + i * delta_x, 4) for i in random_nums]
-    fx_values = [round((i**3 - 2 * (i**2) * math.cos(math.radians(i)) + 3), 4) for i in x_values]
+    fx_values = [round((pow(i, 3) - 2 * (pow(i, 2)) * math.cos(math.radians(i)) + 3), 4) for i in x_values]
 
     data['Individuo'].extend(binary_nums)
     data['i'].extend(random_nums)
     data['x'].extend(x_values)
     data['f(x)'].extend(fx_values)
-
-
-gen_individuals(4, 31, 5, 3, (2/31))
-df = pd.DataFrame(data)
-df.index = df.index + 1
-print(df)
-print(data['Individuo'])
 
 
 def generate_couples(binary_list, n):
@@ -68,9 +57,6 @@ def generate_couples(binary_list, n):
     return couples
 
 
-pairs = generate_couples(data.get('Individuo'), len(data))
-
-
 def crossover_pairs(pairs_of_individuals):
 
     child_of_cross = []
@@ -79,7 +65,6 @@ def crossover_pairs(pairs_of_individuals):
         for part_pair in sn_part_pair:
 
             crossover_point = random.randint(0, len(fs_part_pair) - 1)
-            print(crossover_point)
 
             frst_pair_first_part = fs_part_pair[:crossover_point]
             frst_pair_second_part = fs_part_pair[crossover_point:]
@@ -96,8 +81,7 @@ def crossover_pairs(pairs_of_individuals):
     return child_of_cross
 
 
-children = crossover_pairs(pairs)
-def mutate_children(children_list, prob_individual_mutation, prob_gen_mutation):
+def mutate_pob(children_list, prob_individual_mutation, prob_gen_mutation, delta_x, a):
 
     find_individual_mutation_rate = [
         round(random.random(), 2) for _ in range(len(children_list))
@@ -105,18 +89,27 @@ def mutate_children(children_list, prob_individual_mutation, prob_gen_mutation):
 
     children_and_prob_individual_mutation_rate = tuple(zip(children_list, find_individual_mutation_rate))
 
-    print(children_and_prob_individual_mutation_rate)
-
     find_gen_mutation_rate = [
         child_and_prob[0] for child_and_prob in children_and_prob_individual_mutation_rate
         if child_and_prob[1] <= prob_individual_mutation
     ]
 
-    return gen_mutation_children(find_gen_mutation_rate, prob_gen_mutation)
+    gen_mutation_children(find_gen_mutation_rate, prob_gen_mutation, delta_x, a)
 
 
-def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation):
-    mutations = []
+def x_value(a, i, delta_x):
+    return a + i * delta_x
+
+
+def i_value(individual):
+    return int(individual, 2)
+
+
+def fx_value(i):
+    return round((pow(i, 3) - 2 * (pow(i, 2)) * math.cos(math.radians(i)) + 3), 4)
+
+
+def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation, delta_x, a):
 
     for binary_string in fnd_mutation_rate:
         new_individual = ''
@@ -130,9 +123,7 @@ def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation):
 
             new_individual += str(new_bit)
 
-        mutations.append(new_individual)
-
-    return mutations
-
-
-mutate_children(children, 0.6, 0.5)
+        data['Individuo'].append(new_individual)
+        data['i'].append(i_value(new_individual))
+        data['x'].append(x_value(a, i_value(new_individual), delta_x))
+        data['f(x)'].append(fx_value(i_value(new_individual)))
