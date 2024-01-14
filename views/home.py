@@ -1,60 +1,94 @@
-import tkinter as tk
+from tkinter import *
+from operations.do_operations import start_simulation as start
 
-window = tk.Tk()
-window.title("Genetic Algorithm")
-window.configure(bg="#C1FAA2")
-window.geometry("500x200")
-window.resizable(False, False)
-resulting_value = tk.IntVar(value=0)
+class Ventana():
 
-lbl_min_population = tk.Label(window, text="|Poblacion|")
-first_population = tk.Entry(window, width=10)
-lbl_min_population.place(x=30, y=20)
-first_population.place(x=30, y=45)
 
-lbl_max_population = tk.Label(window, text="|Poblacion_max|")
-max_population = tk.Entry(window, width=10)
-lbl_max_population.place(x=150, y=20)
-max_population.place(x=165, y=45)
+    def __init__(self):
+        principal = Tk()
+        principal.title('Pantalla Principal')
+        principal.geometry('801x259')
+        principal.config(bg='#1a1c1d')
+        self.resulting_value = IntVar(value=0)
 
-lbl_point_A = tk.Label(window, text="A")
-pointA = tk.Entry(window, width=10)
-lbl_point_A.place(x=300, y=20)
-pointA.place(x=280, y=45)
+        principal.resizable(0, 0)
+        self.pobation = Label(principal, text='|Población|', bg='#1a1c1d', fg='#ffffff',
+                              font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
+        self.pobation.place(x=45, y=26)
+        self.poblation = Label(principal, text='|Población max|', bg='#1a1c1d', fg='#ffffff',
+                               font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
+        self.poblation.place(x=180, y=26)
+        self.pointa = Label(principal, text='A', bg='#1a1c1d', fg='#ffffff', font=('Comic Sans MS', 12, 'bold'),
+                            justify=LEFT)
+        self.pointa.place(x=405, y=26)
+        self.pointb = Label(principal, text='B', bg='#1a1c1d', fg='#ffffff', font=('Comic Sans MS', 12, 'bold'),
+                            justify=LEFT)
+        self.pointb.place(x=495, y=26)
+        self.lbliterations = Label(principal, text='Número de iteraciones', bg='#1a1c1d', fg='#ffffff',
+                                   font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
+        self.lbliterations.place(x=560, y=26)
+        self.entrypoblation = Entry(principal, width='8', insertbackground='#000000', bg='#ffffff', fg='#000000',
+                                    font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.entrypoblation.place(x=45, y=52)
+        self.maxpoblationentry = Entry(principal, width='9', insertbackground='#000000', bg='#ffffff', fg='#000000',
+                                       font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.maxpoblationentry.place(x=195, y=52)
+        self.entrya = Entry(principal, width='7', insertbackground='#000000', bg='#ffffff', fg='#000000',
+                            font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.entrya.place(x=375, y=52)
+        self.entryb = Entry(principal, width='7', insertbackground='#000000', bg='#ffffff', fg='#000000',
+                            font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.entryb.place(x=465, y=52)
+        self.iterationsentry = Entry(principal, width='7', insertbackground='#000000', bg='#f2f2f2', fg='#000000',
+                                     font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.iterationsentry.place(x=615, y=52)
+        self.probmutindv = Label(principal, text='|Prob_mutación_individuo|', bg='#1a1c1d', fg='#ffffff',
+                                 font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
+        self.probmutindv.place(x=30, y=104)
+        self.probmutgen = Label(principal, text='|Prob_mutación_gen|', bg='#1a1c1d', fg='#ffffff',
+                                font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
+        self.probmutgen.place(x=300, y=104)
+        self.lblresolution = Label(principal, text='Resolución deseada', bg='#1a1c1d', fg='#ffffff',
+                                   font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
+        self.lblresolution.place(x=548, y=104)
+        self.probmutindventry = Entry(principal, width='16', insertbackground='#000000', bg='#ffffff', fg='#000000',
+                                      font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.probmutindventry.place(x=45, y=130)
+        self.probmutgenentry = Entry(principal, width='13', insertbackground='#000000', bg='#ffffff', fg='#000000',
+                                     font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.probmutgenentry.place(x=323, y=130)
+        self.resolutionentry = Entry(principal, width='14', insertbackground='#000000', bg='#ffffff', fg='#000000',
+                                     font=('Comic Sans MS', 12, 'normal'), justify=LEFT)
+        self.resolutionentry.place(x=555, y=130)
+        self.mandandmin = Label(principal, text='Resultado', bg='#1a1c1d', fg='#ffffff',
+                                font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
+        self.mandandmin.place(x=105, y=182)
+        self.minvalue = Checkbutton(principal, text='Min', bg='#1a1c1d', fg='#000000',
+                                    font=('Comic Sans MS', 12, 'normal'), variable=self.resulting_value, onvalue=1)
+        self.minvalue.place(x=60, y=208)
+        self.maxvalue = Checkbutton(principal, text='Max', bg='#1a1c1d', fg='#000000',
+                                    font=('Comic Sans MS', 12, 'normal'), variable=self.resulting_value, onvalue=2)
+        self.maxvalue.place(x=185, y=208)
 
-labelPointB = tk.Label(window, text="B")
-pointB = tk.Entry(window, width=10)
-labelPointB.place(x=400, y=20)
-pointB.place(x=380, y=45)
+        initiate = Button(principal, width='16', text='calcular', bg='#c2e3bf', fg='#000000',
+                          font=('Comic Sans MS', 12, 'bold'), command=self.do_simulation).place(x=555, y=195)
 
-lbl_probability_crossbreeding = tk.Label(window, text="|Prob_cruza|")
-probability_crossbreeding = tk.Entry(window, width=10)
-lbl_probability_crossbreeding.place(x=30, y=80)
-probability_crossbreeding.place(x=30, y=105)
+        principal.mainloop()
 
-lbl_individual_mutation_probability = tk.Label(window, text="|Prob_Mutacion_individuo|")
-individual_mutation_probability = tk.Entry(window, width=10)
-lbl_individual_mutation_probability.place(x=150, y=80)
-individual_mutation_probability.place(x=185, y=105)
+    def do_simulation(self):
+        data = {
+            "a": self.entrya.get(),
+            "b": self.entryb.get(),
+            "pob_min": self.entrypoblation.get(),
+            "pob_max": self.maxpoblationentry.get(),
+            "iterations": self.iterationsentry.get(),
+            "prob_mut_individual": self.probmutindventry.get(),
+            "prob_mut_gene": self.probmutgenentry.get(),
+            "res": self.resolutionentry.get(),
+            "max_or_min": self.resulting_value
+        }
 
-lbl_gen_mutation_probability = tk.Label(window, text="|Prob_Mutacion_gen|")
-gen_mutation_probability = tk.Entry(window, width=10)
-lbl_gen_mutation_probability.place(x=350, y=80)
-gen_mutation_probability.place(x=385, y=105)
+        start(data)
 
-lbl_desired_resolution = tk.Label(window, text="Resolución deseada")
-desired_resolution = tk.Entry(window, width=20)
-lbl_desired_resolution.place(x=35, y=130)
-desired_resolution.place(x=30, y=150)
 
-lbl_resulting_value = tk.Label(window, text="Resultado")
-min_values = tk.Checkbutton(window, text="Min", variable=resulting_value, onvalue=1)
-max_values = tk.Checkbutton(window, text="Max", variable=resulting_value, onvalue=2)
-lbl_resulting_value.place(x=220, y=130)
-min_values.place(x=200, y=150)
-max_values.place(x=250, y=150)
-
-initiate_algorithm = tk.Button(window, text="Iniciar")
-initiate_algorithm.place(x=380, y=145)
-
-window.mainloop()
+Ventana()
