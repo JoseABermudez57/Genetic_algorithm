@@ -10,20 +10,11 @@ data = {
 
 
 def gen_base_values(a, b, bits_length, delta_x_tch):
-    ranges = b - a
-    jumps_tch = ranges / delta_x_tch
-    points_tch = jumps_tch + 1
-    qt_bits_tch = math.ceil(math.log(points_tch, 2))
-    print(delta_x_tch, points_tch, jumps_tch)
-    if 2 ** (qt_bits_tch - 1) < points_tch <= 2 ** qt_bits_tch:
-        print("correcto", qt_bits_tch)
-    else:
-        print("incorrecto", qt_bits_tch)
+    graphic_range = b - a
 
-    print("_______________________")
+    delta_x = delta_x_evaluation(graphic_range, bits_length, delta_x_tch)
 
-    delta_x = ranges / (pow(2, bits_length) - 1)
-    jumps = ranges / delta_x
+    jumps = graphic_range / delta_x
     points = jumps + 1
     qt_bits = math.ceil(math.log(points, 2))
     print(delta_x, points, jumps)
@@ -31,6 +22,14 @@ def gen_base_values(a, b, bits_length, delta_x_tch):
         print("correcto", qt_bits)
     else:
         print("incorrecto", qt_bits)
+
+
+def delta_x_evaluation(graphic_range, qt_bits, delta_x_tch):
+    delta_x = graphic_range / (pow(2, qt_bits) - 1)
+    if delta_x_tch > delta_x:
+        return delta_x
+    else:
+        return delta_x_tch
 
 
 def gen_individuals(min_population, jumps, qt_bits, a, delta_x):
