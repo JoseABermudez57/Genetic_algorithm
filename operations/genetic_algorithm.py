@@ -42,3 +42,19 @@ def gen_individuals(min_population, jumps, qt_bits, a, delta_x):
     data['i'].extend(random_nums)
     data['x'].extend(x_values)
     data['f(x)'].extend(fx_values)
+
+
+def generate_couples(binary_list, n):
+    couples = []
+
+    for individual in binary_list:
+        m = random.randint(0, n)
+        couple_individuals = random.sample(binary_list, m)
+
+        if individual in couple_individuals:
+            couple_individuals.remove(individual)
+
+        couples.append((individual, couple_individuals))
+
+    return couples
+
