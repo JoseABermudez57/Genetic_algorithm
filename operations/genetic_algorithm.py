@@ -82,3 +82,22 @@ def crossover_pairs(pairs_of_individuals):
             child_of_cross.append(scn_children)
 
     return child_of_cross
+
+
+def mutate_children(children_list, prob_individual_mutation, prob_gen_mutation):
+
+    find_individual_mutation_rate = [
+        round(random.random(), 2) for _ in range(len(children_list))
+    ]
+
+    children_and_prob_individual_mutation_rate = tuple(zip(children_list, find_individual_mutation_rate))
+
+    print(children_and_prob_individual_mutation_rate)
+
+    find_gen_mutation_rate = [
+        child_and_prob[0] for child_and_prob in children_and_prob_individual_mutation_rate
+        if child_and_prob[1] <= prob_individual_mutation
+    ]
+
+    print(find_gen_mutation_rate)
+
