@@ -25,10 +25,9 @@ def start_simulation(data):
     for _ in range(iterations):
         couples = ga.generate_couples(ga.data.get('Individuo'), len(ga.data))
         children = ga.crossover_pairs(couples)
-        mutate_children = ga.mutate_pob(children, prob_mut_individual, prob_mut_gene)
-        ga.data.get('Individuo').extend(mutate_children)
+        ga.mutate_pob(children, prob_mut_individual, prob_mut_gene, delta_x, a)
         print(ga.data.get("Individuo"))
 
-    print(df)
+    print(pd.DataFrame(ga.data))
 
     print("_________________________")
