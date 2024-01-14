@@ -35,3 +35,14 @@ class GeneticAlgorithm:
             print("correcto", qt_bits)
         else:
             print("incorrecto", qt_bits)
+
+    def gen_individuals(self):
+        random_nums = [random.randint(0, self.jumps) for _ in range(self.min_population)]
+        binary_nums = [format(int(num), f'0{self.bits_length}b') for num in random_nums]
+        x_values = [round(self.a + i * self.delta_x_tch, 4) for i in random_nums]
+        fx_values = [round((i**3 - 2 * (i**2) * math.cos(math.radians(i)) + 3), 4) for i in x_values]
+
+        self.data['Individuo'].extend(binary_nums)
+        self.data['i'].extend(random_nums)
+        self.data['x'].extend(x_values)
+        self.data['f(x)'].extend(fx_values)
