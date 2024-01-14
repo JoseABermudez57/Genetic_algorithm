@@ -58,3 +58,27 @@ def generate_couples(binary_list, n):
 
     return couples
 
+
+def crossover_pairs(pairs_of_individuals):
+
+    child_of_cross = []
+
+    for fs_part_pair, sn_part_pair in pairs_of_individuals:
+        for part_pair in sn_part_pair:
+
+            crossover_point = random.randint(0, len(fs_part_pair) - 1)
+            print(crossover_point)
+
+            frst_pair_first_part = fs_part_pair[:crossover_point]
+            frst_pair_second_part = fs_part_pair[crossover_point:]
+
+            scn_pair_first_part = part_pair[:crossover_point]
+            scn_pair_second_part = part_pair[crossover_point:]
+
+            frst_children = frst_pair_first_part + scn_pair_second_part
+            scn_children = scn_pair_first_part + frst_pair_second_part
+
+            child_of_cross.append(frst_children)
+            child_of_cross.append(scn_children)
+
+    return child_of_cross
