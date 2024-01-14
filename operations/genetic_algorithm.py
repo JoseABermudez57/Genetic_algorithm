@@ -1,6 +1,5 @@
 import math
 import random
-import pandas as pd
 
 data = {
     'Individuo': [],
@@ -125,5 +124,41 @@ def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation, delta_x, a):
 
         data['Individuo'].append(new_individual)
         data['i'].append(i_value(new_individual))
-        data['x'].append(x_value(a, i_value(new_individual), delta_x))
+        data['x'].append(round(x_value(a, i_value(new_individual), delta_x), 4))
         data['f(x)'].append(fx_value(i_value(new_individual)))
+
+
+def pruning(evaluate, pob_max):
+    fitness = data['f(x)']
+    deleted = []
+
+    if evaluate == 1:
+        value = min(fitness)
+    else:
+        value = max(fitness)
+
+    new_list_wht_the_best = [element for element in fitness if element != value]
+
+    randint = random.randint(0, len(new_list_wht_the_best) - 1)
+
+    eliminate = random.sample(range(len(new_list_wht_the_best)), randint)
+
+    while len(eliminate) <= pob_max:
+        deleted = [x for i, x in enumerate(new_list_wht_the_best) if i not in eliminate]
+
+    return deleted
+
+
+def maximus_and_minimus(evaluate):
+    fitness = data['f(x)']
+
+    if evaluate == 1:
+        best = min(fitness)
+        worst = max(fitness)
+    else:
+        best = max(fitness)
+        worst = min(fitness)
+
+    avergare_evaluated = sum(fitness) / len(fitness)
+
+    return best, worst, avergare_evaluated
