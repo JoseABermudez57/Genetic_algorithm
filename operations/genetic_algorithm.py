@@ -1,6 +1,8 @@
 import math
 import random
 
+import pandas as pd
+
 data = {
     'Individuo': [],
     'i': [],
@@ -44,6 +46,13 @@ def gen_individuals(min_population, jumps, qt_bits, a, delta_x):
     data['f(x)'].extend(fx_values)
 
 
+gen_individuals(4, 31, 5, 3, (2/31))
+df = pd.DataFrame(data)
+df.index = df.index + 1
+print(df)
+print(data['Individuo'])
+
+
 def generate_couples(binary_list, n):
     couples = []
 
@@ -57,6 +66,9 @@ def generate_couples(binary_list, n):
         couples.append((individual, couple_individuals))
 
     return couples
+
+
+pairs = generate_couples(data.get('Individuo'), len(data))
 
 
 def crossover_pairs(pairs_of_individuals):
@@ -84,6 +96,7 @@ def crossover_pairs(pairs_of_individuals):
     return child_of_cross
 
 
+children = crossover_pairs(pairs)
 def mutate_children(children_list, prob_individual_mutation, prob_gen_mutation):
 
     find_individual_mutation_rate = [
@@ -99,5 +112,27 @@ def mutate_children(children_list, prob_individual_mutation, prob_gen_mutation):
         if child_and_prob[1] <= prob_individual_mutation
     ]
 
-    print(find_gen_mutation_rate)
+    return gen_mutation_children(find_gen_mutation_rate, prob_gen_mutation)
 
+
+def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation):
+    mutations = []
+
+    for binary_string in fnd_mutation_rate:
+        new_individual = ''
+        for bit in binary_string:
+            random_number = round(random.random(), 2)
+
+            if random_number <= prob_gen_mutation:
+                new_bit = 1 - int(bit)
+            else:
+                new_bit = int(bit)
+
+            new_individual += str(new_bit)
+
+        mutations.append(new_individual)
+
+    return mutations
+
+
+mutate_children(children, 0.6, 0.5)
