@@ -32,7 +32,7 @@ def start_simulation(data):
 
     print(ga.data)
 
-    iterations_for_graphic = list(range(1, len(statistics_by_iteration) + 1))  # Número de iteraciones
+    iterations_for_graphic = list(range(1, len(statistics_by_iteration) + 1))
 
     best_values = [elem[0] for elem in statistics_by_iteration]
     worst_values = [elem[1] for elem in statistics_by_iteration]
