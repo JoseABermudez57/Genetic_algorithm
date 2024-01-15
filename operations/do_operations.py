@@ -52,7 +52,7 @@ def start_simulation(data):
         plt.text(iterations_for_graphic[i], prom_values[i], f'{round(prom_values[i], 2):.2f}', ha='right', va='top')
 
     plt.title('Valores a lo largo de las Iteraciones')
-    plt.xlabel('Número de Iteraciones')
-    plt.ylabel('Valores')
+    plt.xlabel('Iteración')
+    plt.ylabel('Fitness')
     plt.legend()
     plt.show()
