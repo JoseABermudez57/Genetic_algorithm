@@ -130,35 +130,46 @@ def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation, delta_x, a):
 
 def pruning(evaluate, pob_max):
     fitness = data['f(x)']
-    deleted = []
 
-    if evaluate == 1:
+    if evaluate:
         value = min(fitness)
     else:
         value = max(fitness)
 
-    new_list_wht_the_best = [element for element in fitness if element != value]
+    index = fitness.index(value)
 
-    randint = random.randint(0, len(new_list_wht_the_best) - 1)
+    values_i = {column: data[column][index] for column in data}
 
-    eliminate = random.sample(range(len(new_list_wht_the_best)), randint)
+    while len(fitness) > pob_max - 1:
+        randint = random.randint(0, len(fitness) - 1)
 
-    while len(eliminate) <= pob_max:
-        deleted = [x for i, x in enumerate(new_list_wht_the_best) if i not in eliminate]
+        for column in data:
+            del data[column][randint]
 
-    return deleted
+    exists = any(all(data[column][i] == values_i[column] for column in data) for i in range(len(data['f(x)'])))
+
+    if exists:
+        for i in range(len(data['f(x)']) - 1, -1, -1):
+            if all(data[column][i] == values_i[column] for column in data):
+                for column in data:
+                    del data[column][i]
+
+    rdm_position = random.randint(0, len(data['f(x)']) - 1)
+
+    for column in data:
+        data[column].insert(rdm_position, values_i[column])
 
 
 def maximus_and_minimus(evaluate):
     fitness = data['f(x)']
 
-    if evaluate == 1:
+    if evaluate:
         best = min(fitness)
         worst = max(fitness)
     else:
         best = max(fitness)
         worst = min(fitness)
 
-    avergare_evaluated = sum(fitness) / len(fitness)
+    average_evaluated = sum(fitness) / len(fitness)
 
-    return best, worst, avergare_evaluated
+    return best, worst, average_evaluated
