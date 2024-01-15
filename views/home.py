@@ -91,4 +91,5 @@ class Ventana:
         start(data)
 
 
-Ventana()
+if __name__ == "__main__":
+    Ventana()
