@@ -1,15 +1,15 @@
 from tkinter import *
 from operations.do_operations import start_simulation as start
 
-class Ventana():
 
+class Ventana:
 
     def __init__(self):
         principal = Tk()
-        principal.title('Pantalla Principal')
+        principal.title('Algoritmo Genético')
         principal.geometry('801x259')
         principal.config(bg='#1a1c1d')
-        self.resulting_value = IntVar(value=0)
+        self.resulting_value = BooleanVar()
 
         principal.resizable(0, 0)
         self.pobation = Label(principal, text='|Población|', bg='#1a1c1d', fg='#ffffff',
@@ -64,14 +64,14 @@ class Ventana():
                                 font=('Comic Sans MS', 12, 'bold'), justify=LEFT)
         self.mandandmin.place(x=105, y=182)
         self.minvalue = Checkbutton(principal, text='Min', bg='#1a1c1d', fg='#000000',
-                                    font=('Comic Sans MS', 12, 'normal'), variable=self.resulting_value, onvalue=1)
+                                    font=('Comic Sans MS', 12, 'normal'), variable=self.resulting_value, onvalue=True)
         self.minvalue.place(x=60, y=208)
         self.maxvalue = Checkbutton(principal, text='Max', bg='#1a1c1d', fg='#000000',
-                                    font=('Comic Sans MS', 12, 'normal'), variable=self.resulting_value, onvalue=2)
+                                    font=('Comic Sans MS', 12, 'normal'), variable=self.resulting_value, onvalue=False)
         self.maxvalue.place(x=185, y=208)
 
-        initiate = Button(principal, width='16', text='calcular', bg='#c2e3bf', fg='#000000',
-                          font=('Comic Sans MS', 12, 'bold'), command=self.do_simulation).place(x=555, y=195)
+        Button(principal, width='16', text='calcular', bg='#c2e3bf', fg='#000000',
+               font=('Comic Sans MS', 12, 'bold'), command=self.do_simulation).place(x=555, y=195)
 
         principal.mainloop()
 
