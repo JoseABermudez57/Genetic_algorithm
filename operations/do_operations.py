@@ -2,6 +2,7 @@ from fractions import Fraction
 import pandas as pd
 from operations import genetic_algorithm as ga
 import matplotlib.pyplot as plt
+import imageio
 import os
 import numpy as np
 
@@ -37,6 +38,8 @@ def start_simulation(data):
 
     show_statistics_by_iteration_graphic(statistics_by_iteration)
     show_statistics_by_generation_graphic(statistics_by_generation, a, b)
+    print("PNG's hechos!")
+    make_gif_from_graphics()
 
 
 def custom_function(x):
@@ -47,8 +50,6 @@ def show_statistics_by_iteration_graphic(statistics_by_iteration):
     output_folder = 'gráficas_individuales/iteraciones/'
     os.makedirs(output_folder, exist_ok=True)
 
-    # Best | Worst | Average - by iteration
-
     iterations_for_graphic = list(range(1, len(statistics_by_iteration) + 1))
 
     best_values_iteration = [elem[0] for elem in statistics_by_iteration]
@@ -58,7 +59,8 @@ def show_statistics_by_iteration_graphic(statistics_by_iteration):
     plt.figure(figsize=(10, 6))
 
     plt.plot(iterations_for_graphic, best_values_iteration, label='Mejores resultados', marker='^', linestyle='-')
-    plt.plot(iterations_for_graphic, worst_values_iteration, label='Peores resultados', marker='s', linestyle='--', color='orange')
+    plt.plot(iterations_for_graphic, worst_values_iteration, label='Peores resultados', marker='s', linestyle='--',
+             color='orange')
     plt.plot(iterations_for_graphic, avg_values_iteration, label='Promedio', marker='o', linestyle='-.', color='green')
 
     plt.title('Valores a lo largo de las Iteraciones')
@@ -78,6 +80,9 @@ def show_statistics_by_generation_graphic(statistics_by_generation, a, b):
     os.makedirs(output_folder, exist_ok=True)
 
     for i, lista in enumerate(statistics_by_generation):
+        if not lista:
+            continue
+
         plt.figure()
 
         x_range = np.linspace(a, b, num_points)
@@ -106,3 +111,20 @@ def show_statistics_by_generation_graphic(statistics_by_generation, a, b):
         filename = os.path.join(output_folder, f'Grafica_generacion_{i + 1}.png')
         plt.savefig(filename)
         plt.close('all')
+
+
+def make_gif_from_graphics():
+
+    input_folder = 'gráficas_individuales/generaciones/'
+    output_folder = 'gráficas_individuales/gif/'
+    os.makedirs(output_folder, exist_ok=True)
+
+    file_names = sorted(
+        [os.path.join(input_folder, file) for file in os.listdir(input_folder) if file.endswith('.png')])
+
+    output_gif = 'gráficas_individuales/gif/generaciones.gif'
+
+    images = [imageio.imread(file) for file in file_names]
+    imageio.mimsave(output_gif, images, duration=3)
+
+    print(f'GIF guardado en: {output_gif}')

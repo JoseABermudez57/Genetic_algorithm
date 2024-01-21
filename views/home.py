@@ -2,6 +2,22 @@ from tkinter import *
 from operations.do_operations import start_simulation as start
 
 
+def do_simulation():
+    data = {
+        "a": 3,
+        "b": 5,
+        "pob_min": 4,
+        "pob_max": 8,
+        "iterations": 100,
+        "prob_mut_individual": 0.2,
+        "prob_mut_gene": 0.5,
+        "res": 2/31,
+        "max_or_min": True
+    }
+
+    start(data)
+
+
 class Ventana:
 
     def __init__(self):
@@ -71,24 +87,9 @@ class Ventana:
         self.maxvalue.place(x=185, y=208)
 
         Button(principal, width='16', text='calcular', bg='#c2e3bf', fg='#000000',
-               font=('Comic Sans MS', 12, 'bold'), command=self.do_simulation).place(x=555, y=195)
+               font=('Comic Sans MS', 12, 'bold'), command=do_simulation).place(x=555, y=195)
 
         principal.mainloop()
-
-    def do_simulation(self):
-        data = {
-            "a": self.entrya.get(),
-            "b": self.entryb.get(),
-            "pob_min": self.entrypoblation.get(),
-            "pob_max": self.maxpoblationentry.get(),
-            "iterations": self.iterationsentry.get(),
-            "prob_mut_individual": self.probmutindventry.get(),
-            "prob_mut_gene": self.probmutgenentry.get(),
-            "res": self.resolutionentry.get(),
-            "max_or_min": self.resulting_value
-        }
-
-        start(data)
 
 
 if __name__ == "__main__":
