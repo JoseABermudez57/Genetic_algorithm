@@ -10,7 +10,7 @@ data = {
 
 
 def gen_base_values(a, b, delta_x_tch):
-    graphic_range = b - a
+    graphic_range = abs(b - a)
     jumps = graphic_range / delta_x_tch
     points = jumps + 1
     qt_bits = math.ceil(math.log(points, 2))
@@ -32,13 +32,25 @@ def gen_individuals(min_population, qt_bits, a, delta_x):
 
     random_nums = random.sample(range((pow(2, qt_bits))), min_population)
     binary_nums = [format(int(num), f'0{qt_bits}b') for num in random_nums]
-    x_values = [round(a + i * delta_x, 4) for i in random_nums]
-    fx_values = [round((pow(i, 3) - 2 * (pow(i, 2)) * math.cos(math.radians(i)) + 3), 4) for i in x_values]
+    x_values = [x_value(a, i, delta_x) for i in random_nums]
+    fx_values = [fx_value(i) for i in x_values]
 
     data['Individuo'].extend(binary_nums)
     data['i'].extend(random_nums)
     data['x'].extend(x_values)
     data['f(x)'].extend(fx_values)
+
+
+def x_value(a, i, delta_x):
+    return round(a + i * delta_x, 4)
+
+
+def i_value(individual):
+    return int(individual, 2)
+
+
+def fx_value(i):
+    return round(i**3 - (i**3) * math.cos(i * 5), 4)
 
 
 def generate_couples(binary_list, n):
@@ -93,22 +105,11 @@ def mutate_pob(children_list, prob_individual_mutation, prob_gen_mutation, delta
         if child_and_prob[1] <= prob_individual_mutation
     ]
 
-    gen_mutation_children(find_gen_mutation_rate, prob_gen_mutation, delta_x, a)
-
-
-def x_value(a, i, delta_x):
-    return a + i * delta_x
-
-
-def i_value(individual):
-    return int(individual, 2)
-
-
-def fx_value(i):
-    return round((pow(i, 3) - 2 * (pow(i, 2)) * math.cos(math.radians(i)) + 3), 4)
+    return gen_mutation_children(find_gen_mutation_rate, prob_gen_mutation, delta_x, a)
 
 
 def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation, delta_x, a):
+    generations = []
 
     for binary_string in fnd_mutation_rate:
         new_individual = ''
@@ -122,10 +123,21 @@ def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation, delta_x, a):
 
             new_individual += str(new_bit)
 
+        # Obtain and store the values of all individuals
+        x_values = round(x_value(a, i_value(new_individual), delta_x), 4)
+        fx_values = fx_value(x_values)
+        i_values = i_value(new_individual)
+
+        # Add the individual to the population
         data['Individuo'].append(new_individual)
-        data['i'].append(i_value(new_individual))
-        data['x'].append(round(x_value(a, i_value(new_individual), delta_x), 4))
-        data['f(x)'].append(fx_value(i_value(new_individual)))
+        data['i'].append(i_values)
+        data['x'].append(x_values)
+        data['f(x)'].append(fx_values)
+
+        # Add to the generation list
+        generations.append((fx_values, x_values))
+
+    return generations
 
 
 def pruning(evaluate, pob_max):

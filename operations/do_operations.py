@@ -2,10 +2,13 @@ from fractions import Fraction
 import pandas as pd
 from operations import genetic_algorithm as ga
 import matplotlib.pyplot as plt
+import os
+import numpy as np
 
 
 def start_simulation(data):
     statistics_by_iteration = []
+    statistics_by_generation = []
     a = int(data["a"])
     b = int(data["b"])
     pob_min = int(data["pob_min"])
@@ -14,45 +17,92 @@ def start_simulation(data):
     res = float(Fraction(data["res"]))
     iterations = int(data["iterations"])
     pob_max = int(data["pob_max"])
-    max_or_min = data["max_or_min"].get()
+    max_or_min = data["max_or_min"]
 
     qt_bits, delta_x = ga.gen_base_values(a, b, res)
     ga.gen_individuals(pob_min, qt_bits, a, delta_x)
 
-    for _ in range(iterations):
+    for i in range(iterations):
         couples = ga.generate_couples(ga.data.get('Individuo'), 4)
         children = ga.crossover_pairs(couples)
-        ga.mutate_pob(children, prob_mut_individual, prob_mut_gene, delta_x, a)
+        mutate_pob = ga.mutate_pob(children, prob_mut_individual, prob_mut_gene, delta_x, a)
+        statistics_by_generation.append(mutate_pob)
         statistics_by_iteration.append(ga.maximus_and_minimus(max_or_min))
+        ga.pruning(max_or_min, pob_max)
 
+    output_csv_folder = "Estadisticos"
+    os.makedirs(output_csv_folder, exist_ok=True)
     df = pd.DataFrame(ga.data)
-    df.to_csv('estadisticos.csv')
+    df.to_csv(f'{output_csv_folder}/estadisticos.csv')
 
-    ga.pruning(max_or_min, pob_max)
+    show_statistics_by_iteration_graphic(statistics_by_iteration)
+    show_statistics_by_generation_graphic(statistics_by_generation, a, b)
 
-    print(ga.data)
+
+def custom_function(x):
+    return x ** 3 - (x ** 3) * np.cos(x * 5.0)
+
+
+def show_statistics_by_iteration_graphic(statistics_by_iteration):
+    output_folder = 'gráficas_individuales/iteraciones/'
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Best | Worst | Average - by iteration
 
     iterations_for_graphic = list(range(1, len(statistics_by_iteration) + 1))
 
-    best_values = [elem[0] for elem in statistics_by_iteration]
-    worst_values = [elem[1] for elem in statistics_by_iteration]
-    prom_values = [elem[2] for elem in statistics_by_iteration]
+    best_values_iteration = [elem[0] for elem in statistics_by_iteration]
+    worst_values_iteration = [elem[1] for elem in statistics_by_iteration]
+    avg_values_iteration = [elem[2] for elem in statistics_by_iteration]
 
     plt.figure(figsize=(10, 6))
 
-    plt.plot(iterations_for_graphic, best_values, label='Mejores resultados', marker='^', linestyle='-')
-
-    plt.plot(iterations_for_graphic, worst_values, label='Peores resultados', marker='s', linestyle='--', color='orange')
-
-    plt.plot(iterations_for_graphic, prom_values, label='Promedio', marker='o', linestyle='-.', color='green')
-
-    for i, txt in enumerate(statistics_by_iteration):
-        plt.text(iterations_for_graphic[i], best_values[i], f'{round(best_values[i], 2):.2f}', ha='right', va='bottom')
-        plt.text(iterations_for_graphic[i], worst_values[i], f'{round(worst_values[i],2):.2f}', ha='left', va='bottom')
-        plt.text(iterations_for_graphic[i], prom_values[i], f'{round(prom_values[i], 2):.2f}', ha='right', va='top')
+    plt.plot(iterations_for_graphic, best_values_iteration, label='Mejores resultados', marker='^', linestyle='-')
+    plt.plot(iterations_for_graphic, worst_values_iteration, label='Peores resultados', marker='s', linestyle='--', color='orange')
+    plt.plot(iterations_for_graphic, avg_values_iteration, label='Promedio', marker='o', linestyle='-.', color='green')
 
     plt.title('Valores a lo largo de las Iteraciones')
     plt.xlabel('Iteración')
     plt.ylabel('Fitness')
     plt.legend()
-    plt.show()
+    plt.grid(True)
+    filename = os.path.join(output_folder, 'Grafica_estadisticos.png')
+    plt.savefig(filename)
+    plt.close()
+
+
+def show_statistics_by_generation_graphic(statistics_by_generation, a, b):
+
+    num_points = 1000
+    output_folder = 'gráficas_individuales/generaciones/'
+    os.makedirs(output_folder, exist_ok=True)
+
+    for i, lista in enumerate(statistics_by_generation):
+        plt.figure()
+
+        x_range = np.linspace(a, b, num_points)
+        y_range = custom_function(x_range)
+        plt.plot(x_range, y_range, label=r'Función', color='black', linestyle='--')
+
+        x_values = [point[1] for point in lista]
+        y_values = [point[0] for point in lista]
+
+        idx_max = np.argmax(y_values)
+        idx_min = np.argmin(y_values)
+
+        plt.scatter(x_values, y_values, label=f'Demás individuos {i + 1}')
+
+        plt.scatter(x_values[idx_max], y_values[idx_max], color='green', label='Valor Máximo')
+        plt.scatter(x_values[idx_min], y_values[idx_min], color='red', label='Valor Mínimo')
+
+        plt.xlim(a, b)
+
+        plt.title(f'Generación {i + 1}')
+        plt.xlabel('Rango')
+        plt.ylabel('f(x)')
+        plt.legend()
+        plt.grid(True)
+
+        filename = os.path.join(output_folder, f'Grafica_generacion_{i + 1}.png')
+        plt.savefig(filename)
+        plt.close('all')
