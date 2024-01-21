@@ -124,7 +124,7 @@ def make_gif_from_graphics():
 
     output_gif = 'gráficas_individuales/gif/generaciones.gif'
 
-    images = [imageio.imread(file) for file in file_names]
-    imageio.mimsave(output_gif, images, duration=3)
+    images = [imageio.imread_v2(file) for file in file_names]
+    imageio.mimsave(output_gif, images)
 
     print(f'GIF guardado en: {output_gif}')
