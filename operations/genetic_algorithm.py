@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 data = {
     'Individuo': [],
@@ -9,6 +10,7 @@ data = {
 }
 
 
+# Generate base values for the creation of individuals
 def gen_base_values(a, b, delta_x_tch):
     graphic_range = abs(b - a)
     jumps = graphic_range / delta_x_tch
@@ -28,6 +30,7 @@ def delta_x_evaluation(graphic_range, qt_bits, delta_x_tch):
         return delta_x_tch
 
 
+# Generate initial population
 def gen_individuals(min_population, qt_bits, a, delta_x):
 
     random_nums = random.sample(range((pow(2, qt_bits))), min_population)
@@ -41,6 +44,7 @@ def gen_individuals(min_population, qt_bits, a, delta_x):
     data['f(x)'].extend(fx_values)
 
 
+# Methods for the creation of individuals
 def x_value(a, i, delta_x):
     return round(a + i * delta_x, 4)
 
@@ -49,8 +53,9 @@ def i_value(individual):
     return int(individual, 2)
 
 
-def fx_value(i):
-    return round(i**3 - (i**3) * math.cos(i * 5), 4)
+# Replace the returned formula
+def fx_value(x):
+    return (x ** 3) - (2 * (x ** 2) * np.cos(x)) + 3
 
 
 def generate_couples(binary_list, n):
@@ -109,7 +114,6 @@ def mutate_pob(children_list, prob_individual_mutation, prob_gen_mutation, delta
 
 
 def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation, delta_x, a):
-    generations = []
 
     for binary_string in fnd_mutation_rate:
         new_individual = ''
@@ -134,15 +138,12 @@ def gen_mutation_children(fnd_mutation_rate, prob_gen_mutation, delta_x, a):
         data['x'].append(x_values)
         data['f(x)'].append(fx_values)
 
-        # Add to the generation list
-        generations.append((fx_values, x_values))
-
-    return generations
-
 
 def pruning(evaluate, pob_max):
+
     fitness = data['f(x)']
 
+    # Determine whether to minimize or maximize the fitness function
     if evaluate:
         value = min(fitness)
     else:
@@ -152,12 +153,6 @@ def pruning(evaluate, pob_max):
 
     values_i = {column: data[column][index] for column in data}
 
-    while len(fitness) > pob_max - 1:
-        randint = random.randint(0, len(fitness) - 1)
-
-        for column in data:
-            del data[column][randint]
-
     exists = any(all(data[column][i] == values_i[column] for column in data) for i in range(len(data['f(x)'])))
 
     if exists:
@@ -166,12 +161,24 @@ def pruning(evaluate, pob_max):
                 for column in data:
                     del data[column][i]
 
+    while len(fitness) > pob_max - 1:
+        randint = random.randint(0, len(fitness) - 1)
+
+        for column in data:
+            del data[column][randint]
+
     rdm_position = random.randint(0, len(data['f(x)']) - 1)
 
+    # Insert the best individual at the randomly chosen position
     for column in data:
         data[column].insert(rdm_position, values_i[column])
 
+    rtn_data_for_graphic = list(zip(data['x'], data['f(x)']))
 
+    return rtn_data_for_graphic
+
+
+# Method to obtain statistical data from the fitness data
 def maximus_and_minimus(evaluate):
     fitness = data['f(x)']
 
