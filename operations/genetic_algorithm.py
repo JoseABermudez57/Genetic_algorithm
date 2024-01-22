@@ -173,10 +173,6 @@ def pruning(evaluate, pob_max):
     for column in data:
         data[column].insert(rdm_position, values_i[column])
 
-    rtn_data_for_graphic = list(zip(data['x'], data['f(x)']))
-
-    return rtn_data_for_graphic
-
 
 # Method to obtain statistical data from the fitness data
 def maximus_and_minimus(evaluate):

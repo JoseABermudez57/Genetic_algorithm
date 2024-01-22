@@ -36,11 +36,11 @@ def start_simulation(data):
         # Save statistic data for graphic #1
         statistics_by_iteration.append(ga.maximus_and_minimus(max_or_min))
 
-        # Pruning
-        pruning = ga.pruning(max_or_min, pob_max)
-
         # Save population by generation for graphic #2
-        statistics_by_generation.append(pruning)
+        statistics_by_generation.append(list(zip(ga.data['x'], ga.data['f(x)'])))
+
+        # Pruning
+        ga.pruning(max_or_min, pob_max)
 
     # Create folder to store statistical data (population and best, worst and average value)
     output_csv_folder = "Estadisticos"
@@ -83,7 +83,7 @@ def show_statistics_by_generation_graphic(statistics_by_iteration):
              color='orange')
     plt.plot(iterations_for_graphic, avg_values_iteration, label='Promedio', marker='o', linestyle='-.', color='green')
 
-    plt.title('Valores a lo largo de las generaciones')
+    plt.title('Evolución a lo largo de las generaciones')
     plt.xlabel('Generación')
     plt.ylabel('Fitness')
     plt.legend()
